@@ -1,0 +1,118 @@
+
+
+Microchip MPLAB XC8 Assembler V2.31 build 20201012212115 
+                                                                                                           Fri Sep 03 01:09:45 2021
+
+
+     1                           	processor	18F87K22
+     2                           	pagewidth 132
+     3                           	psect	udata_acs,global,class=COMRAM,space=1,delta=1,lowdata,noexec
+     4                           	psect	udata_bank0,global,class=BANK0,space=1,delta=1,lowdata,noexec
+     5                           	psect	udata_bank1,global,class=BANK1,space=1,delta=1,lowdata,noexec
+     6                           	psect	udata_bank2,global,class=BANK2,space=1,delta=1,lowdata,noexec
+     7                           	psect	udata_bank3,global,class=BANK3,space=1,delta=1,lowdata,noexec
+     8                           	psect	udata_bank4,global,class=BANK4,space=1,delta=1,lowdata,noexec
+     9                           	psect	udata_bank5,global,class=BANK5,space=1,delta=1,lowdata,noexec
+    10                           	psect	udata_bank6,global,class=BANK6,space=1,delta=1,lowdata,noexec
+    11                           	psect	udata_bank7,global,class=BANK7,space=1,delta=1,lowdata,noexec
+    12                           	psect	udata_bank8,global,class=BANK8,space=1,delta=1,lowdata,noexec
+    13                           	psect	udata_bank9,global,class=BANK9,space=1,delta=1,lowdata,noexec
+    14                           	psect	udata_bank10,global,class=BANK10,space=1,delta=1,lowdata,noexec
+    15                           	psect	udata_bank11,global,class=BANK11,space=1,delta=1,lowdata,noexec
+    16                           	psect	udata_bank12,global,class=BANK12,space=1,delta=1,lowdata,noexec
+    17                           	psect	udata_bank13,global,class=BANK13,space=1,delta=1,lowdata,noexec
+    18                           	psect	udata_bank14,global,class=BANK14,space=1,delta=1,lowdata,noexec
+    19                           	psect	udata_bank15,global,class=BANK15,space=1,delta=1,lowdata,noexec
+    20                           	psect	udata,global,class=RAM,space=1,delta=1,noexec
+    21                           	psect	code,global,reloc=2,class=CODE,delta=1
+    22                           	psect	data,global,reloc=2,class=CONST,delta=1,noexec
+    23                           	psect	edata,global,class=EEDATA,space=3,delta=2,noexec
+    24                           	psect	rtcc_code,global,class=CODE,delta=1
+    25  0000                     
+    26                           	psect	udata_acs
+    27  000007                     RTCC_seconds:
+    28                           	callstack 0
+    29  000007                     	ds	1	; reserve 1 byte for variable UART_counter
+    30                           
+    31                           	psect	edata
+    32  0000                     stk_offset	set	0
+    33  0000                     auto_size	set	0
+    34                           
+    35                           ; stack_auto defines a symbol /name/_offset which equates to the
+    36                           ; stack offset of the auto object in question
+    37  000000                     
+    38                           ; stack_param defines a symbol /name/_offset which equates to the
+    39                           ; stack offset of the parameter object in question
+    40  000000                     
+    41                           ; alloc_stack adjusts the SP to allocate space for auto objects
+    42                           ; it also links in to the btemp symbol so that can be used
+    43  000000                     
+    44                           ; restore_stack adjusts the SP to remove all auto and parameter
+    45                           ; objects from the stack prior to returning from a function
+    46  000000                     
+    47                           	psect	rtcc_code
+    48  01FEAC                     RTCC_Setup:
+    49                           	callstack 0
+    50  01FEAC  010F               	banksel	3935	; ((PORTG) and 0FFh), 4, a SFRs are not in access ram
+    51  01FEAE  8553               	bsf	83,2,b	; RTSECSELx bits determine output on ((PORTG) and 0FFh), 4, a pin
+    52  01FEB0  9353               	bcf	83,1,b	; 10 outputs the source clock, 01 outputs second count
+    53  01FEB2  0E84               	movlw	132	; Enable ((PORTG) and 0FFh), 4, a, turn on ((PORTG) and 0FFh), 4, a output pin
+    54  01FEB4  6F5F               	movwf	3935,b
+    55  01FEB6  0100               	movlb	0	; reset BSR to 0
+    56  01FEB8  0012               	return	
+    57  01FEBA                     RTCC_Get_Seconds:
+    58                           	callstack 0
+    59                           
+    60                           ; Reads and stores seconds value in RTCC_Seconds
+    61                           ; Also returns the value in W register
+    62  01FEBA  010F               	banksel	3935	; ((PORTG) and 0FFh), 4, a SFRs are not in access ram
+    63  01FEBC  935F               	bcf	95,1,b	; Clear ((RTCCFG) and 0FFh), 1, b and ((RTCCFG) and 0FFh), 0, b for seconds output
+    64  01FEBE  915F               	bcf	95,0,b
+    65  01FEC0  515C               	movf	3932,w,b	; Read seconds from RTCVALL
+    66  01FEC2  6E07               	movwf	RTCC_seconds,c	; Store value in RTCC_Seconds valriable space
+    67  01FEC4  0100               	movlb	0	; reset BSR to 0
+    68  01FEC6  0012               	return	
+    69                           tosu	equ	0xFFF
+    70                           tosh	equ	0xFFE
+    71                           tosl	equ	0xFFD
+    72                           stkptr	equ	0xFFC
+    73                           pclatu	equ	0xFFB
+    74                           pclath	equ	0xFFA
+    75                           pcl	equ	0xFF9
+    76                           tblptru	equ	0xFF8
+    77                           tblptrh	equ	0xFF7
+    78                           tblptrl	equ	0xFF6
+    79                           tablat	equ	0xFF5
+    80                           prodh	equ	0xFF4
+    81                           prodl	equ	0xFF3
+    82                           indf0	equ	0xFEF
+    83                           postinc0	equ	0xFEE
+    84                           postdec0	equ	0xFED
+    85                           preinc0	equ	0xFEC
+    86                           plusw0	equ	0xFEB
+    87                           fsr0h	equ	0xFEA
+    88                           fsr0l	equ	0xFE9
+    89                           wreg	equ	0xFE8
+    90                           indf1	equ	0xFE7
+    91                           postinc1	equ	0xFE6
+    92                           postdec1	equ	0xFE5
+    93                           preinc1	equ	0xFE4
+    94                           plusw1	equ	0xFE3
+    95                           fsr1h	equ	0xFE2
+    96                           fsr1l	equ	0xFE1
+    97                           bsr	equ	0xFE0
+    98                           indf2	equ	0xFDF
+    99                           postinc2	equ	0xFDE
+   100                           postdec2	equ	0xFDD
+   101                           preinc2	equ	0xFDC
+   102                           plusw2	equ	0xFDB
+   103                           fsr2h	equ	0xFDA
+   104                           fsr2l	equ	0xFD9
+   105                           status	equ	0xFD8
+
+
+Microchip Technology PIC18 Macro Assembler V2.31 build 20201012212115 
+Symbol Table                                                                                               Fri Sep 03 01:09:45 2021
+
+                          RTCCFG 000F5F                           PADCFG1 000F53                           RTCVALL 000F5C  
+                      RTCC_Setup FEAC                      RTCC_seconds 0007                  RTCC_Get_Seconds FEBA  
